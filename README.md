@@ -69,7 +69,8 @@ chenghua.wang.edu@gmail.com
 |RESIDE[^1]|训练集包含13,990个合成图像，每个清晰图像合成10个模糊图像。 提供了13,000个用于训练和990个用于验证。设置每个通道大气光A在[0.7，1.0]之间，均匀地随机选择beta在[0.6,1.8]。 |人造| [link](https://sites.google.com/view/reside-dehaze-datasets/reside-standard?authuser=3D0)|    
 
 </div>
-[^1]: Li, Boyi, Wenqi Ren, Dengpan Fu, Dacheng Tao, Dan Feng, Wenjun Zeng and Zhangyang Wang. “RESIDE: A Benchmark for Single Image Dehazing.” ArXiv abs/1712.04143 (2017): n. pag.
+[^1]: Li, Boyi, Wenqi Ren, Dengpan Fu, Dacheng Tao, Dan Feng,
+    Wenjun Zeng and Zhangyang Wang. “RESIDE: A Benchmark for Single Image Dehazing.” ArXiv abs/1712.04143 (2017): n. pag.
 
 ### 算法
 
