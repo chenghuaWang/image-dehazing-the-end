@@ -1,5 +1,17 @@
 # Image Dehazing, the end.
 
+<!-- style settings -->
+<style>
+.center 
+{
+  width: auto;
+  display: table;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
+<!-- style settings -->
+
 ```
 chenghua Wang, Jan 23 2023
 
@@ -38,17 +50,26 @@ chenghua.wang.edu@gmail.com
 
 <details>
 <summary>[1.卷人造数据集指标]</summary>
-显然，这样的选择应该是多数的(为了生活/毕业)。
+显然，这样的选择应该是多数的(为了生活/毕业)。TODO
 </details>
 
 <details>
 <summary>[2.义愤填膺的想搞出真东西]</summary>
-这是一条非常艰难的路子(实际上，我是持劝退态度的，或许换一个有好的数据集，setting还算可以的课题更容易出扎实的成果)。
+这是一条非常艰难的路子(实际上，我是持劝退态度的，或许换一个有好的数据集，setting还算可以的课题更容易出扎实的成果)。TODO
 </details>
 
 ## 相关的工作
 
 ### 数据集
+
+<div class="center">
+
+|数据集 | 描述  | 人造/真实 |URL |
+|:----:|:----:|:----:    |:----: |
+|RESIDE[^1]|训练集包含13,990个合成图像，每个清晰图像合成10个模糊图像。 提供了13,000个用于训练和990个用于验证。设置每个通道大气光A在[0.7，1.0]之间，均匀地随机选择beta在[0.6,1.8]。 |人造| [link](https://sites.google.com/view/reside-dehaze-datasets/reside-standard?authuser=3D0)|    
+
+</div>
+[^1]: Li, Boyi, Wenqi Ren, Dengpan Fu, Dacheng Tao, Dan Feng, Wenjun Zeng and Zhangyang Wang. “RESIDE: A Benchmark for Single Image Dehazing.” ArXiv abs/1712.04143 (2017): n. pag.
 
 ### 算法
 
@@ -70,16 +91,16 @@ chenghua.wang.edu@gmail.com
 
 <table>
     <tr>
-        <td ><center><img src="./asset/real-world/3.bmp" >pic1(a) real-world id=3</center></td>
-        <td ><center><img src="./asset/real-world/3.bmp"  >pic1(b) dehazed id=3</center></td>
+        <td ><center><img src="./asset/real-world/3.bmp" > pic 1(a) real-world id=3</center></td>
+        <td ><center><img src="./asset/real-world/3.bmp" > pic 1(b) dehazed id=3</center></td>
     </tr>
     <tr>
-        <td><center><img src="./asset/real-world/5.bmp">pic2(a) real-world id=5</center></td>
-        <td ><center><img src="./asset/real-world/5.bmp">pic2(b) dehazed id=5</center> </td>
+        <td><center><img src="./asset/real-world/5.bmp"> pic 2(a) real-world id=5</center></td>
+        <td ><center><img src="./asset/real-world/5.bmp"> pic 2(b) dehazed id=5</center> </td>
     </tr>
     <tr>
-        <td><center><img src="./asset/real-world/104.bmp">pic3(a) real-world id=104</center></td>
-        <td ><center><img src="./asset/real-world/104.bmp">pic3(b) dehazed id=104</center> </td>
+        <td><center><img src="./asset/real-world/104.bmp" > pic 3(a) real-world id=104</center></td>
+        <td ><center><img src="./asset/real-world/104.bmp" > pic 3(b) dehazed id=104</center> </td>
     </tr>
 </table>
 
@@ -87,12 +108,12 @@ chenghua.wang.edu@gmail.com
 <summary>[check more]</summary>
 <table>
     <tr>
-        <td ><center><img src="./asset/real-world/3.bmp" >pic1(a) real-world id=3</center></td>
-        <td ><center><img src="./asset/real-world/3.bmp"  >pic1(b) dehazed id=3</center></td>
+        <td ><center><img src="./asset/real-world/3.bmp" > pic 1(a) real-world id=3</center></td>
+        <td ><center><img src="./asset/real-world/3.bmp" > pic 1(b) dehazed id=3</center></td>
     </tr>
     <tr>
-        <td><center><img src="./asset/real-world/5.bmp">pic2(a) real-world id=5</center></td>
-        <td ><center><img src="./asset/real-world/5.bmp">pic2(b) dehazed id=5</center> </td>
+        <td><center><img src="./asset/real-world/5.bmp" > pic 2(a) real-world id=5</center></td>
+        <td ><center><img src="./asset/real-world/5.bmp"> pic 2(b) dehazed id=5</center> </td>
     </tr>
 </table>
 </details>
