@@ -145,6 +145,8 @@ $$
 
 3. 现有的数据集多样性不够
 
+    现在的数据集的物体种类，或者说颜色的多样性是比较不足的。如果把去雾任务仅仅当作一个颜色矫正的任务，那么GT的颜色多样性是需要有保障的。
+
 ### 先验-网络-end2end
 
 ### 过拟合-还是-DomainGap
@@ -199,7 +201,13 @@ $$
 
 1. 使用超像素的方法来改进(并不是非常好)
 
+    这个数据集是Non-homogeneous haze data synthesis based real-world image dehazing with enhancement-and-restoration fused CNNs.<sup><a href="#ref5">[5]</a></sup>提出的，大家可以看看做法。基本上就是通过在原图上的超像素划分，在划分的区域上进行不同浓度的加雾。如上文中已经展示的[link](#过拟合-还是-domaingap)图片，这些图片是使用超像素方法来生成的。在实验结果上，虽然图更假了，但是在“泛化性”上来说，效果不错(这个数据集挺挑网络的)。
+
+    但是超像素以后，这个数据集看起来和真实的数据集gap更大了。也许这是一种正则化作用？
+
 2. 线性的雾生成
+
+    我更倾向于在原本的 $t=e^{-\beta d(x)}$ 的模型的基础上进行一些改进，原本是全图一致性的，现在改成向着某一个方向渐变的。对于FCN网络，在某一个小块上，基本上是一个方向向着另一个方向渐进或者说变化的。这样相对于超像素的方法来说可能会更好。
 
 3. 使用 CG ?
 
@@ -246,6 +254,8 @@ $$
 
 ## 总结
 
+以上是我的一家之谈，我参与到去雾的研究时间不长，各位大佬们轻喷，也希望大家能指正错误。
+
 最后，祝各位读者学习、研究顺利，身体健康，生活愉快。
 
 ## citing
@@ -271,3 +281,5 @@ $$
 3. <p name="ref3">He, Kaiming, Jian Sun and Xiao Jie Tang. “Single Image Haze Removal Using Dark Channel Prior.” IEEE Transactions on Pattern Analysis and Machine Intelligence (2011)</p>
 
 4. <p name="ref4">Wan, Ziyu, Bo Zhang, Dongdong Chen, P. Zhang, Dong Chen, Jing Liao and Fang Wen. “Bringing Old Photos Back to Life.” 2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) (2020): 2744-2754.</p>
+
+5. <p name="ref5">Liu, Chunxiao, Shuangshuang Ye, Lideng Zhang, Haiyong Bao, Xun Wang and Fanding Wu. “Non-homogeneous haze data synthesis based real-world image dehazing with enhancement-and-restoration fused CNNs.” Comput. Graph. 106 (2022): 45-57.</p>
