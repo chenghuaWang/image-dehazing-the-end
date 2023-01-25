@@ -60,8 +60,8 @@ chenghua.wang.edu@gmail.com
 <p align="center">❗❗❗学术不端是严重的罪行，我坚决抵制这些行为❗❗❗</p>
 
 - 不那么虚一点的。我认为可以尝试在小地方进行改进(当然要发文章的话，期刊/会议等级不会太高)。
-  - 技术报告类型的文章
-  - 在某些微小操作上改进，普适性的。<!-- 比如旷世non-local那篇 -->
+  - 技术报告类型的文章 TODO
+  - 在某些微小操作上改进，普适性的。TODO <!-- 比如旷世non-local那篇 -->
 
 </details>
 
@@ -78,23 +78,52 @@ chenghua.wang.edu@gmail.com
 
 </details>
 
+---
+
+但是不论如何，下面提到的这些还是对于研究大有益处的：
+
+- 去雾属于 low-level 任务，在研究上来说，不应该太受 high-level 领域的一些算法设计方法的影响，二者是不一样的。对于 low-level 任务，我认为应当更多的关注于数字图像处理和计算摄影方面的内容。
+
+  - 数字图像处理的内容读者应该都上过课程或者读过书学习过了。
+
+  - <details><summary>[Shree K. Nayar from Columbia University，计算摄影(click to expand)]</summary>
+    <br>
+
+    [个人主页URL](https://www.cs.columbia.edu/~nayar/), [课程URL](https://fpcv.cs.columbia.edu/)
+    </details>
+
+  - <details><summary>[Michael S. Brown from York University，计算摄影(click to expand)]</summary>
+    <br>
+    
+    [个人主页URL](http://www.cse.yorku.ca/~mbrown/)
+    
+    [ICCV 2019 Tutorial URL, Understanding Color and the In-Camera Image Processing Pipeline for Computer Vision](https://www.eecs.yorku.ca/~mbrown/ICCV2019_Brown.html)
+    </details>
+
 ## 相关的工作
 
 ### 数据集
+
+<details><summary>[Dataset list(click to expand)]</summary>
+<br>
 
 <div class="center">
 
 |数据集 | 描述  | 人造/真实 |URL |
 |:----:|:----:|:----:    |:----: |
-|RESIDE<sup><a href="#ref1">[1]</a></sup>|训练集包含13,990个合成图像，每个清晰图像合成10个模糊图像。 提供了13,000个用于训练和990个用于验证。设置每个通道大气光A在[0.7，1.0]之间，均匀地随机选择beta在[0.6,1.8]。 |人造| [link](https://sites.google.com/view/reside-dehaze-datasets/reside-standard?authuser=3D0)|    
+|RESIDE<sup><a href="#ref1">[1]</a></sup>|训练集包含13,990个合成图像，每个清晰图像合成10个模糊图像。 提供了13,000个用于训练和990个用于验证。设置每个通道大气光A在[0.7，1.0]之间，均匀地随机选择beta在[0.6,1.8]。 |人造| [link](https://sites.google.com/view/reside-dehaze-datasets/reside-standard?authuser=3D0)|
 
 </div>
 
+</details>
+
 ### 算法
+
+TODO
 
 ## 目前dehazing的主要问题
 
-我始终认为，解决数据集的问题(如何模拟出现实场景中的雾)是去雾里面最重要的点。好的先验是其次的，好的网络设计是最后的，然后才是调参数。最后，对于如何评价网络性能的优劣，也缺少一个合适的方法(在 low-level 的大部分任务中都缺少一个合适的评价指标)
+我始终认为，如果要使用深度学习方法，解决**大量成对真实数据集**的问题(如何模拟出现实场景中的雾)是去雾里面最重要的点。好的先验是其次的，好的网络设计是最后的，然后才是调参数。最后，对于如何评价网络性能的优劣，也缺少一个合适的方法(在 low-level 的大部分任务中都缺少一个合适的评价指标)
 
 ### 数据集
 
@@ -108,9 +137,11 @@ $$
 
 1. 去雾没有大量的成对数据集
 
-<!-- 直接产生 t，A。或者直接产生无雾图是一种无中生有的行为，依赖于很大的数据集 -->
+    我在文中多次谈到了这一点，大量的成对真实数据集对于端到端的方法来说是极其重要的(当然对于大多数监督方法来说都是这样的)。对于**单幅图像**去雾，不论是不是基于物理模型的端到端，不论这几个物理量有没有监督，**这都是一个无中生有的行为**，这些全都靠网络学到的方式来进行映射，数据集就变得尤为重要了(可以参考生成模型)。
 
 2. 现实中的雾不是均质的
+
+    现实中的雾在前后景交界线的位置会出现明显的浓度偏差，在具有白色物体的场景处，也会对深度网络的去雾造成困扰。使用现有的人造雾模型 $I = J \times t + A \times (1-t)$ 不能很好的模拟出非均质的雾，这也就造成了目前许多算法”泛化性“差的问题。
 
 3. 现有的数据集多样性不够
 
@@ -120,13 +151,59 @@ $$
 
 现在许多的网络方法在指标上非常的高，但是在实际的数据集上，效果并不好。很多时候人们说：“先提高指标，再考虑如何提高泛化性能。”，**但是，前提是数据集和真实数据本身是一个 Domain 内的，二者偏差不大**。在去雾中，尚没有人探讨过使用大气光照模型产生的雾和真实的雾的差别，但我想，差别还是非常大的，甚至如卡通图像和写实图像一样大的gap。
 
+<p align="center"><em>
+也就是说，我们得考虑：这个gap是“泛化性”不足，还是gap已经大到domain transfer的范畴了？
+</em></p>
+
+如果gap确实大到domain transfer的范畴了，那么各种“泛化性”的tricks就没必要再上了。我们可能需要像Bring Old Photo Back to Life<sup><a href="#ref4">[4]</a></sup>中提到的方法了。
+
+现在还有很多的工作在人造数据集上测试指标，并且还在不断的提升这个指标，是不是已经开始过拟合数据集了呢？目前的进展是不是已经南辕北辙了呢？神经网络拟合数据的能力是非常强大的，甚至连我下文中提到的超像素方法生成的数据集都可以完全的过拟合(使用我设计的非常naive的网络)，如下:
+
+<table>
+    <tr>
+        <td ><center><img src="./asset/hard-samples/1.png" > pic 1 hard-sample(Hazed, GT, Dehazed)</center></td>
+    </tr>
+    <tr>
+        <td ><center><img src="./asset/hard-samples/2.png" > pic 2 hard-sample(Hazed, GT, Dehazed)</center></td>
+    </tr>
+    <tr>
+        <td ><center><img src="./asset/hard-samples/3.png" > pic 3 hard-sample(Hazed, GT, Dehazed)</center></td>
+    </tr>
+    <tr>
+        <td><center>这里展示的数据都是困难样本(loss从大到小排序的前几位)</center></td>
+    </tr>
+</table>
+
+<details><summary>[click to check more]</summary>
+<table>
+    <tr>
+        <td ><center><img src="./asset/hard-samples/4.png" > pic 4 hard-sample(Hazed, GT, Dehazed)</center></td>
+    </tr>
+    <tr>
+        <td ><center><img src="./asset/hard-samples/5.png" > pic 5 hard-sample(Hazed, GT, Dehazed)</center></td>
+    </tr>
+    <tr>
+        <td ><center><img src="./asset/hard-samples/6.png" > pic 6 hard-sample(Hazed, GT, Dehazed)</center></td>
+    </tr>
+    <tr>
+        <td><center>这里展示的数据都是困难样本(loss从大到小排序的前几位)</center></td>
+    </tr>
+</table>
+</details>
+
+所以啊，我挺怀疑目前已经开始过拟合人造数据集了。但是也没办法，文章里面总得拿个指标说事吧？也希望有好的评价指标能够出来。
+
 ## 一些好玩的idea
 
 ### 数据集改进
 
-1. **使用超像素的方法来改进(并不是非常好)**
+1. 使用超像素的方法来改进(并不是非常好)
 
-2. **线性的雾生成**
+2. 线性的雾生成
+
+3. 使用 CG ?
+
+    现在CG对物体渲染的拟真度已经相当高了，或许我们可以使用CG技术来生成大量的人造数据集，从感官上来看，CG技术生成的图片与真实世界图片的gap还是比较小的。但是这是一个巨大的工作量(找到高精度的模型，放置好雾，需要技术美术参与，还需要渲染...)。
 
 ### 只当作数值问题来考虑
 
@@ -141,7 +218,7 @@ $$
 <table>
     <tr>
         <td ><center><img src="./asset/real-world/3.bmp" > pic 1(a) real-world id=3</center></td>
-        <td ><center><img src="./asset/real-world/3.bmp" > pic 1(b) dehazed id=3</center></td>
+        <td ><center><img src="./asset/dehazed/3.png" > pic 1(b) dehazed id=3</center></td>
     </tr>
     <tr>
         <td><center><img src="./asset/real-world/5.bmp"> pic 2(a) real-world id=5</center></td>
@@ -149,7 +226,7 @@ $$
     </tr>
     <tr>
         <td><center><img src="./asset/real-world/104.bmp" > pic 3(a) real-world id=104</center></td>
-        <td ><center><img src="./asset/real-world/104.bmp" > pic 3(b) dehazed id=104</center> </td>
+        <td ><center><img src="./asset/dehazed/104.png" > pic 3(b) dehazed id=104</center> </td>
     </tr>
 </table>
 
@@ -166,21 +243,6 @@ $$
     </tr>
 </table>
 </details>
-
-<!-- <figure class="half">
-    <img src="http://xxx.jpg">
-    <img src="http://yyy.jpg">
-</figure>
-
-<figure class="half">
-    <img src="http://xxx.jpg">
-    <img src="http://yyy.jpg">
-</figure>
-
-<figure class="half">
-    <img src="http://xxx.jpg">
-    <img src="http://yyy.jpg">
-</figure> -->
 
 ## 总结
 
@@ -207,3 +269,5 @@ $$
 2. <p name="ref2">Fattal, Raanan. “Dehazing Using Color-Lines.” ACM Transactions on Graphics (TOG) 34 (2014): 1 - 14.</p>
 
 3. <p name="ref3">He, Kaiming, Jian Sun and Xiao Jie Tang. “Single Image Haze Removal Using Dark Channel Prior.” IEEE Transactions on Pattern Analysis and Machine Intelligence (2011)</p>
+
+4. <p name="ref4">Wan, Ziyu, Bo Zhang, Dongdong Chen, P. Zhang, Dong Chen, Jing Liao and Fang Wen. “Bringing Old Photos Back to Life.” 2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) (2020): 2744-2754.</p>
