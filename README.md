@@ -1,5 +1,7 @@
 # Image Dehazing, the end.
 
+[简体中文](README.md) | [English](README_en.md)
+
 <!-- style settings -->
 <!-- <style>
 .center 
@@ -38,6 +40,7 @@ chenghua.wang.edu@gmail.com
 - [一些实验结果](一些实验结果)
 - [总结](#总结)
 - [citing](#citing)
+- [issues](#issues)
 
 ## 介绍
 
@@ -119,7 +122,12 @@ chenghua.wang.edu@gmail.com
 
 ### 算法
 
+<details><summary>[Algorithms(click to expand)]</summary>
+<br>
+
 TODO
+
+</details>
 
 ## 目前dehazing的主要问题
 
@@ -151,7 +159,7 @@ $$
 
 ### 过拟合-还是-DomainGap
 
-现在许多的网络方法在指标上非常的高，但是在实际的数据集上，效果并不好。很多时候人们说：“先提高指标，再考虑如何提高泛化性能。”，**但是，前提是数据集和真实数据本身是一个 Domain 内的，二者偏差不大**。在去雾中，尚没有人探讨过使用大气光照模型产生的雾和真实的雾的差别，但我想，差别还是非常大的，甚至如卡通图像和写实图像一样大的gap。
+现在许多的网络方法在指标上非常的高，但是在实际的数据集上，效果并不好。很多时候人们说：“先提高指标，再考虑如何提高泛化性能。（或者说：得一步步走，慢慢来）”，**但是，前提是数据集和真实数据本身是一个 Domain 内的，二者偏差不大**。在去雾中，尚没有人探讨过使用大气光照模型产生的雾和真实的雾的差别，但我想，差别还是非常大的，甚至如卡通图像和写实图像一样大的gap。
 
 <p align="center"><em>
 也就是说，我们得考虑：这个gap是“泛化性”不足，还是gap已经大到domain transfer的范畴了？
@@ -201,7 +209,7 @@ $$
 
 1. 使用超像素的方法来改进(并不是非常好)
 
-    这个数据集是Non-homogeneous haze data synthesis based real-world image dehazing with enhancement-and-restoration fused CNNs.<sup><a href="#ref5">[5]</a></sup>提出的，大家可以看看做法。基本上就是通过在原图上的超像素划分，在划分的区域上进行不同浓度的加雾。如上文中已经展示的[link](#过拟合-还是-domaingap)图片，这些图片是使用超像素方法来生成的。在实验结果上，虽然图更假了，但是在“泛化性”上来说，效果不错(这个数据集挺挑网络的)。
+    这个数据集是Non-homogeneous haze data synthesis based real-world image dehazing with enhancement-and-restoration fused CNNs<sup><a href="#ref5">[5]</a></sup>.提出的，大家可以看看做法。基本上就是通过在原图上的超像素划分，在划分的区域上进行不同浓度的加雾。如上文中已经展示的[link](#过拟合-还是-domaingap)图片，这些图片是使用超像素方法来生成的。在实验结果上，虽然图更假了，但是在“泛化性”上来说，效果不错(这个数据集挺挑网络的)。
 
     但是超像素以后，这个数据集看起来和真实的数据集gap更大了。也许这是一种正则化作用？
 
@@ -215,11 +223,35 @@ $$
 
 ### 只当作数值问题来考虑
 
-<!-- 去雾任务需要很多卷积网络难以表达的统计信息，比如 min，max，mean，std等 -->
+1. 去雾任务需要很多的区域统计信息
+    
+    我认为，很多区域性的统计信息在去雾中起着至关重要的作用。我们不难发现，现在很多的研究者在网络中加入这样的模块 $Output = \text{Concat}(\max{x}, \text{mean}{~x}, \min{x})$。这些模块有些使用了通道上的统计信息，有些使用了传统的 Pooling，但是不可否认的是，这样的小模块去雾是带来了很好的效果。实际上，这就是一种 **人工先验** 的嵌入，一个好的先验胜过一个精心设计的网络。
 
-<!-- 神经网络适合干的事情是信息的压缩，去雾这样的映射不大适合(主要是没数据集啊) -->
+    观察很多的传统方法(11 年左右)，大多数的传统方法都是使用了图片的一个统计信息，不论是求最大最小还是方差等。**但是，卷积神经网络似乎非常难去表示一个区域统计性质的函数**，卷积网络非常适合去压缩信息，做重要性加权一类的事情，对于拟合一些大尺度上的具有区域的统计性质工作并不容易(比如统计某一个块内的方差和均值)。
+
+    所以，我一直认为，在设计的深度网络里面，必须加入人为的先验模块，这个先验模块一定是用来做区域性颜色信息统计(比如统计某个区域内的最大最小值，均值，方差等)。当然，这个统计模块也是可以通过魔改pooling 来达到目的的，但是，我并不看好深度网络在缺乏数据集的情况下能够学到一些统计操作。
+
+2. 数值上的一些小trick是管用的
+
+    现在有许多的研究者在去雾任务中使用 InstanceNorm，不可否认的，这是正确的。我认为可以从数值角度上来考虑这件事情。在一个小区域内(雾是均匀的)，雾所造成的颜色影响实际上就是 $I = J * a + b$， $a,b$ 是拉伸系数，这些拉伸系数会把一个大的颜色范围(比如 0-128)压缩到小的范围(比如 250-255)，这就造成了发白的雾。所以使用这些式子来重新拉大颜色范围可以给神经网络更大的处理空间:
+    
+    $$
+    Output = \frac{x-x_{min}}{x_{max}-x_{min}+\beta},\beta=1e-12
+    $$
+
+    $$
+    Output = \frac{x-x_{mean}}{x_{std}}
+    $$
+
+    > **但是，这也引出了一些问题**
+    >
+    > 在使用了全图统计信息的网络中(比如说 InstanceNorm，Global Pooling等)，因为训练和测试的图片尺寸不匹配会造成非常大的偏差，旷视的一篇文章<sup><a href="#ref6">[6]</a></sup>探讨过这个问题。
 
 ### 迭代级联，模型选择是正确的吗？
+
+很多的研究者受模型选择和 Stable Diffusiuon 或者是 Inverse Network的启发，想用不同的模型或者是渐进式的方法来做到去雾；模型选择和迭代要分开看待，但是还是那句话，**这些假设出来的数学模型非常的吃数据(但是无法否定，如果你用数学式子表达出迭代的去雾公式，还是非常优美的)**。
+
+TODO
 
 ## 一些实验结果
 
@@ -270,6 +302,10 @@ $$
 }
 ```
 
+## issues
+
+非常欢迎大家在 issues 中友好和谐的讨论问题，贴出自己的见解和在真实数据集上的实验结果。
+
 ---
 
 *Reference*
@@ -283,3 +319,5 @@ $$
 4. <p name="ref4">Wan, Ziyu, Bo Zhang, Dongdong Chen, P. Zhang, Dong Chen, Jing Liao and Fang Wen. “Bringing Old Photos Back to Life.” 2020 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR) (2020): 2744-2754.</p>
 
 5. <p name="ref5">Liu, Chunxiao, Shuangshuang Ye, Lideng Zhang, Haiyong Bao, Xun Wang and Fanding Wu. “Non-homogeneous haze data synthesis based real-world image dehazing with enhancement-and-restoration fused CNNs.” Comput. Graph. 106 (2022): 45-57.</p>
+
+6. <p name="ref6">Chu, Xiaojie, Liangyu Chen, Chengpeng Chen and Xin Lu. “Improving Image Restoration by Revisiting Global Information Aggregation.” European Conference on Computer Vision (2021).</p>
