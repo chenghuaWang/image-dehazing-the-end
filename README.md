@@ -1,7 +1,5 @@
 # Image Dehazing, the end.
 
-[简体中文](README.md) | [English](README_en.md)
-
 <!-- style settings -->
 <!-- <style>
 .center 
@@ -26,9 +24,6 @@ chenghua.wang.edu@gmail.com
 
 - [介绍](#介绍)
 - [上手dehazing的建议](#上手dehazing的建议)
-- [相关的工作](#相关的工作)
-  - [数据集](#数据集)
-  - [算法](#算法)
 - [目前dehazing的主要问题](#目前dehazing的主要问题)
   - [数据集](#数据集)
   - [先验-网络-end2end](#先验-网络-end2end)
@@ -48,7 +43,7 @@ chenghua.wang.edu@gmail.com
 
 古早的传统图像处理方法(Hazy line<sup><a href="#ref2">[2]</a></sup>，DCP<sup><a href="#ref3">[3]</a></sup>等)在去雾上还是别有一番风味的，但是重量级武器(深度学习)上马以后，去雾领域却是一言难尽。
 
-下文将首先给出上手去雾研究的建议；然后阐述该领域的一些工作(当然，这里不会事无巨细的写完所有的算法，成为综述一类的，只是提一下大家的普遍的做法)；之后分析目前工作的问题和去雾这个问题本身的难点；其次提出我目前的一些Idea；最后，给出我目前的实验结果和总结。
+下文将首先给出上手去雾研究的建议；相关的工作就不阐述了，想必大家了解的应该比我更多；之后分析目前工作的问题和去雾这个问题本身的难点；其次提出我目前的一些Idea；最后，给出我目前的实验结果和总结。
 
 ## 上手dehazing的建议
 
@@ -63,8 +58,8 @@ chenghua.wang.edu@gmail.com
 <p align="center">❗❗❗学术不端是严重的罪行，我坚决抵制这些行为❗❗❗</p>
 
 - 不那么虚一点的。我认为可以尝试在小地方进行改进(当然要发文章的话，期刊/会议等级不会太高)。
-  - 技术报告类型的文章 TODO
-  - 在某些微小操作上改进，普适性的。TODO <!-- 比如旷世non-local那篇 -->
+  - 技术报告类型的文章
+  - 在某些微小操作上改进，普适性的。(比如旷视的文章<sup><a href="#ref6">[6]</a></sup>，这篇文章的出发点非常好)
 
 </details>
 
@@ -77,7 +72,9 @@ chenghua.wang.edu@gmail.com
 
 - 如果读者执意要在去雾上做出成果，那么我向你表示感谢，并且由衷的希望你能做出很好的成果，甚至终结目前去雾领域的一些怪象。也希望我在下文中阐述的一些观点能够给你启发。再次祝你研究顺利。
 
-- 如此，你需要在数据集乃至算法进行全面的改进。TODO
+- 如此，你需要在数据集乃至算法进行全面的改进。弥补真实数据集和人造数据集的差别，或者找到合适的先验来弥补网络在错误数据集上学习造成的偏差。
+
+- 实际上，对于做出真的能够在真实图像上可行的算法，我无法提出啥确切建议，可以看下下文中的Idea。
 
 </details>
 
@@ -103,35 +100,11 @@ chenghua.wang.edu@gmail.com
     [ICCV 2019 Tutorial URL, Understanding Color and the In-Camera Image Processing Pipeline for Computer Vision](https://www.eecs.yorku.ca/~mbrown/ICCV2019_Brown.html)
     </details>
 
-## 相关的工作
-
-### 数据集
-
-<details><summary>[Dataset list(click to expand)]</summary>
-<br>
-
-<div class="center">
-
-|数据集 | 描述  | 人造/真实 |URL |
-|:----:|:----:|:----:    |:----: |
-|RESIDE<sup><a href="#ref1">[1]</a></sup>|训练集包含13,990个合成图像，每个清晰图像合成10个模糊图像。 提供了13,000个用于训练和990个用于验证。设置每个通道大气光A在[0.7，1.0]之间，均匀地随机选择beta在[0.6,1.8]。 |人造| [link](https://sites.google.com/view/reside-dehaze-datasets/reside-standard?authuser=3D0)|
-
-</div>
-
-</details>
-
-### 算法
-
-<details><summary>[Algorithms(click to expand)]</summary>
-<br>
-
-TODO
-
-</details>
-
 ## 目前dehazing的主要问题
 
 我始终认为，如果要使用深度学习方法，解决**大量成对真实数据集**的问题(如何模拟出现实场景中的雾)是去雾里面最重要的点。好的先验是其次的，好的网络设计是最后的，然后才是调参数。最后，对于如何评价网络性能的优劣，也缺少一个合适的方法(在 low-level 的大部分任务中都缺少一个合适的评价指标)
+
+<p align="center"><img src="./asset/betterDataBetterThanModels.png"  width="40%" alt="we need better data"></p>
 
 ### 数据集
 
@@ -156,6 +129,12 @@ $$
     现在的数据集的物体种类，或者说颜色的多样性是比较不足的。如果把去雾任务仅仅当作一个颜色矫正的任务，那么GT的颜色多样性是需要有保障的。
 
 ### 先验-网络-end2end
+
+我认为**一个好的先验胜过一个好的网络(A better prior is better than better models，与上文的图片对仗？)**。
+
+因为我们缺少好的数据，所以我们必须加入更多的人工先验来缩小解搜索的空间。其实在人工先验上有不少的学者做了研究，很多好的成果发的文章并不是在很高的期刊/会议上。
+
+现在很多的网络在使用端到端的方法来做去雾，抛弃了物理模型，抛弃了人工先验。我是很抵触端到端的网络的，因为端到端是从一个域到另一个域，没有好的数据集能做啥映射呢？
 
 ### 过拟合-还是-DomainGap
 
@@ -243,7 +222,13 @@ $$
 
 很多的研究者受模型选择和 Stable Diffusiuon 或者是 Inverse Network的启发，想用不同的模型或者是渐进式的方法来做到去雾；模型选择和迭代要分开看待，但是还是那句话，**这些假设出来的数学模型非常的吃数据(但是无法否定，如果你用数学式子表达出迭代的去雾公式，还是非常优美的)**。
 
-TODO
+1. 对于模型选择
+
+    我认为，目前的难点是真实数据和训练数据很大的不一致导致的。使用模型选择很难去缓解这个问题，反而，模型选择会加剧过拟合。
+
+2. 对于迭代算法
+
+    迭代算法我认为是有成功的可能性的，但是需要一些无监督/半监督的方法辅助。因为迭代方法实际上是在一个参数范围内穷举。但是何时停止，何种情况下的图片可以定义为无雾是要一些评价指标来判定的。但是，目前没有合适的无参考评价指标。
 
 ## 一些实验结果
 
@@ -254,11 +239,19 @@ TODO
     </tr>
     <tr>
         <td><center><img src="./asset/real-world/5.bmp"> pic 2(a) real-world id=5</center></td>
-        <td ><center><img src="./asset/real-world/5.bmp"> pic 2(b) dehazed id=5</center> </td>
+        <td ><center><img src="./asset/dehazed/5.png"> pic 2(b) dehazed id=5</center> </td>
     </tr>
     <tr>
         <td><center><img src="./asset/real-world/104.bmp" > pic 3(a) real-world id=104</center></td>
         <td ><center><img src="./asset/dehazed/104.png" > pic 3(b) dehazed id=104</center> </td>
+    </tr>
+    <tr>
+        <td><center><img src="./asset/real-world/8.bmp" ><br>pic 4(a) real-world id=8</center></td>
+        <td ><center><img src="./asset/dehazed/8.png"><br>pic 4(b) dehazed id=8</center> </td>
+    </tr>
+    <tr>
+        <td><center><img src="./asset/real-world/12.bmp" ><br>pic 5(a) real-world id=12</center></td>
+        <td ><center><img src="./asset/dehazed/12.png"><br>pic 5(b) dehazed id=12</center> </td>
     </tr>
 </table>
 
@@ -266,12 +259,16 @@ TODO
 <summary>[click to check more]</summary>
 <table>
     <tr>
-        <td ><center><img src="./asset/real-world/3.bmp" > pic 1(a) real-world id=3</center></td>
-        <td ><center><img src="./asset/real-world/3.bmp" > pic 1(b) dehazed id=3</center></td>
+        <td ><center><img src="./asset/real-world/13.bmp" ><br>pic 6(a) real-world id=13</center></td>
+        <td ><center><img src="./asset/dehazed/13.png" ><br>pic 6(b) dehazed id=13</center></td>
     </tr>
     <tr>
-        <td><center><img src="./asset/real-world/5.bmp" > pic 2(a) real-world id=5</center></td>
-        <td ><center><img src="./asset/real-world/5.bmp"> pic 2(b) dehazed id=5</center> </td>
+        <td><center><img src="./asset/real-world/14.bmp" ><br>pic 7(a) real-world id=14</center></td>
+        <td ><center><img src="./asset/dehazed/14.png"><br>pic 7(b) dehazed id=14</center> </td>
+    </tr>
+    <tr>
+        <td><center><img src="./asset/real-world/68.bmp" ><br>pic 8(a) real-world id=68</center></td>
+        <td ><center><img src="./asset/dehazed/68.png"><br>pic 8(b) dehazed id=68</center> </td>
     </tr>
 </table>
 </details>
